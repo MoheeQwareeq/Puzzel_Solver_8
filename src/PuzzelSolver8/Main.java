@@ -1,10 +1,10 @@
 package PuzzelSolver8;
 
-
-/*
-      Mohee Qwareeq      
-      Qotayba Darawshi   
+/**
+ * @author Mohee Qwareeq 
+ * @author Qotayba Darawshi 
  */
+
 public class Main {
 
     public static void main(String[] args) {
