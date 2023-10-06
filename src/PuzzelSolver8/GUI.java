@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 public class GUI extends javax.swing.JFrame {
 
     Integer count = -1;
-    int Count = 1;
     int start_point[][] = new int[3][3];
     int end_point[][] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
     boolean checkCount[] = new boolean[9];
@@ -40,7 +39,7 @@ public class GUI extends javax.swing.JFrame {
         jPanel1.setVisible(false);
         jSlider2.setValue(1000);
 
-    }
+    } 
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -608,6 +607,27 @@ public class GUI extends javax.swing.JFrame {
         // return true if inversion count is even.
         return (invCount % 2 == 0);
     }
+     static boolean isSolvable(int[][] start,int[][] end) {
+       int[] linearStart = new int[9];
+    int[] linearEnd = new int[9];
+    int k = 0;
+
+    // Converting 2-D start puzzle to linear form
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            linearStart[k] = start[i][j];
+            linearEnd[k] = end[i][j];
+            k++;
+        }
+    }
+
+    // Count inversions in both the start and end puzzles
+    int startInvCount = getInvCount(linearStart);
+    int endInvCount = getInvCount(linearEnd);
+
+    // Check if both start and end states have the same parity
+    return (startInvCount % 2 == endInvCount % 2);
+     }
 
     private void Solve_itActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Solve_itActionPerformed
         Node start = null;
@@ -690,15 +710,15 @@ public class GUI extends javax.swing.JFrame {
 
         try {
 
-            start_point[0][0] = Integer.valueOf(t1.getText());
-            start_point[0][1] = Integer.valueOf(t2.getText());
-            start_point[0][2] = Integer.valueOf(t3.getText());
-            start_point[1][0] = Integer.valueOf(t4.getText());
-            start_point[1][1] = Integer.valueOf(t5.getText());
-            start_point[1][2] = Integer.valueOf(t6.getText());
-            start_point[2][0] = Integer.valueOf(t7.getText());
-            start_point[2][1] = Integer.valueOf(t8.getText());
-            start_point[2][2] = Integer.valueOf(t9.getText());
+            start_point[0][0] = Integer.parseInt(t1.getText());
+            start_point[0][1] = Integer.parseInt(t2.getText());
+            start_point[0][2] = Integer.parseInt(t3.getText());
+            start_point[1][0] = Integer.parseInt(t4.getText());
+            start_point[1][1] = Integer.parseInt(t5.getText());
+            start_point[1][2] = Integer.parseInt(t6.getText());
+            start_point[2][0] = Integer.parseInt(t7.getText());
+            start_point[2][1] = Integer.parseInt(t8.getText());
+            start_point[2][2] = Integer.parseInt(t9.getText());
 
             if (isSolvable(start_point) && Default.isSelected()) {
 
@@ -718,7 +738,8 @@ public class GUI extends javax.swing.JFrame {
                 }
 
                 putStart(start_point);
-            } else if (!Default.isSelected()) {
+            }
+            else if (!Default.isSelected()) {
 
                 System.out.println("Start point :-");
 
@@ -736,8 +757,16 @@ public class GUI extends javax.swing.JFrame {
                 clear();
                 S = true;
                 if (S && E) {
-                    Next.setVisible(true);
+                 if (isSolvable(start_point,end_point)) Next.setVisible(true);
+                 else {
+                E =false;
+                S =false;
+                JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
+                clear();
+                return;
+                 }
                 }
+                
 
             } else {
                 JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
@@ -1174,6 +1203,7 @@ public class GUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_clear_startActionPerformed
     void clear() {
+        count = -1;
         for (int i = 0; i < checkCount.length; i++) {
             checkCount[i] = false;
         }
@@ -1234,15 +1264,15 @@ public class GUI extends javax.swing.JFrame {
     private void save_endActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_endActionPerformed
         // TODO add your handling code here:
         try {
-            end_point[0][0] = Integer.valueOf(t1.getText());
-            end_point[0][1] = Integer.valueOf(t2.getText());
-            end_point[0][2] = Integer.valueOf(t3.getText());
-            end_point[1][0] = Integer.valueOf(t4.getText());
-            end_point[1][1] = Integer.valueOf(t5.getText());
-            end_point[1][2] = Integer.valueOf(t6.getText());
-            end_point[2][0] = Integer.valueOf(t7.getText());
-            end_point[2][1] = Integer.valueOf(t8.getText());
-            end_point[2][2] = Integer.valueOf(t9.getText());
+            end_point[0][0] = Integer.parseInt(t1.getText());
+            end_point[0][1] = Integer.parseInt(t2.getText());
+            end_point[0][2] = Integer.parseInt(t3.getText());
+            end_point[1][0] = Integer.parseInt(t4.getText());
+            end_point[1][1] = Integer.parseInt(t5.getText());
+            end_point[1][2] = Integer.parseInt(t6.getText());
+            end_point[2][0] = Integer.parseInt(t7.getText());
+            end_point[2][1] = Integer.parseInt(t8.getText());
+            end_point[2][2] = Integer.parseInt(t9.getText());
 
             System.out.println("End point :-");
 
@@ -1260,7 +1290,14 @@ public class GUI extends javax.swing.JFrame {
             E = true;
 
             if (S && E) {
-                Next.setVisible(true);
+                 if (isSolvable(start_point,end_point)) Next.setVisible(true);
+                 else {
+                E =false;
+                S =false;
+                JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
+                clear();
+                return;
+                 }
             }
 
         } catch (Exception e) {
