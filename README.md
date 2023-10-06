@@ -20,3 +20,5 @@ Manhattan Distance and Misplaced Tiles.
 
 Solution Path Display: The program displays the tested path and the solution path to help users visualize the solving process.
 
+For more details, watch this video:
+https://drive.google.com/file/d/1TmTmZ4spyDLnoSAeFtSzWPDTXOsTYEDp/view?usp=share_link
