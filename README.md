@@ -3,8 +3,8 @@
 The 8-puzzle is a square board with 9 positions, filled by 8 numbered tiles and one gap. At any point, a tile adjacent to the gap can be moved into the gap, creating a new gap position. In other words, the gap can be swapped with an adjacent (horizontally and vertically) tile. The objective in the game is to begin with an arbitrary configuration of tiles and move them to get the numbered tiles arranged in ascending order either running around the perimeter of the board or ordered from left to right, with 1 in the top left-hand position.
 
 
+<img width="857" alt="Screen Shot 2023-10-06 at 6 36 47 AM" src="https://github.com/MoheeQwareeq/Puzzel_Solver_8/assets/143301303/f36e72d1-0579-4a9d-a983-5b7c4b143d44">
 
-<img width="849" alt="Screen Shot 2023-10-04 at 8 33 52 AM" src="https://github.com/MoheeQwareeq/Puzzel_Solver_8/assets/143301303/3b1c83f8-99c8-4d07-ab75-c247cc92d889">
 
 
 Features
