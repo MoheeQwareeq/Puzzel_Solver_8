@@ -21,7 +21,7 @@ public class GUI extends javax.swing.JFrame {
         Cover1.setVisible(false);
         Cover2.setVisible(false);
         this.setLocationRelativeTo(null);
-        setTitle("Puzzle Solver 8");
+        setTitle("8 Puzzle solver");
         A_star.setSelected(false);
         heuristic2.setSelected(false);
         algorithem.add(greedy);
