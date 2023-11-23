@@ -2,16 +2,18 @@ package PuzzelSolver8;
 
 import java.awt.Color;
 import java.util.Stack;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class GUI extends javax.swing.JFrame {
 
     Integer count = -1;
-    int start_point[][] = new int[3][3];
-    int end_point[][] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+    int[][] startPoint = new int[3][3];
+    int[][] endPoint = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
     boolean checkCount[] = new boolean[9];
-    Stack<int[][]> stac;
-    private Thread Gui;
+    Stack<int[][]> stack;
+    private Thread gui;
     boolean S = false;
     boolean E = false;
 
@@ -38,8 +40,7 @@ public class GUI extends javax.swing.JFrame {
         Algorithm1.setVisible(false);
         jPanel1.setVisible(false);
         jSlider2.setValue(1000);
-
-    } 
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -573,9 +574,8 @@ public class GUI extends javax.swing.JFrame {
         Cover1.setVisible(false);
         Cover.setVisible(false);
         Cover2.setVisible(true);
-
     }//GEN-LAST:event_StartActionPerformed
-    static int getInvCount(int[] arr) {
+    int getInvCount(int[] arr) {
         int inv_count = 0;
         for (int i = 0; i < 9; i++) {
             for (int j = i + 1; j < 9; j++) // Value 0 is used for empty space
@@ -589,45 +589,39 @@ public class GUI extends javax.swing.JFrame {
         return inv_count;
     }
 
-    static boolean isSolvable(int[][] puzzle) {
+    boolean isSolvable(int[][] puzzle) {
         int linearPuzzle[];
         linearPuzzle = new int[9];
         int k = 0;
 
-        // Converting 2-D puzzle to linear form
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 linearPuzzle[k++] = puzzle[i][j];
             }
         }
 
-        // Count inversions in given 8 puzzle
         int invCount = getInvCount(linearPuzzle);
 
-        // return true if inversion count is even.
         return (invCount % 2 == 0);
     }
-     static boolean isSolvable(int[][] start,int[][] end) {
-       int[] linearStart = new int[9];
-    int[] linearEnd = new int[9];
-    int k = 0;
 
-    // Converting 2-D start puzzle to linear form
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            linearStart[k] = start[i][j];
-            linearEnd[k] = end[i][j];
-            k++;
+    boolean isSolvable(int[][] start, int[][] end) {
+        int[] linearStart = new int[9];
+        int[] linearEnd = new int[9];
+        int k = 0;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                linearStart[k] = start[i][j];
+                linearEnd[k] = end[i][j];
+                k++;
+            }
         }
+
+        int startInvCount = getInvCount(linearStart);
+        int endInvCount = getInvCount(linearEnd);
+        return (startInvCount % 2 == endInvCount % 2);
     }
-
-    // Count inversions in both the start and end puzzles
-    int startInvCount = getInvCount(linearStart);
-    int endInvCount = getInvCount(linearEnd);
-
-    // Check if both start and end states have the same parity
-    return (startInvCount % 2 == endInvCount % 2);
-     }
 
     private void Solve_itActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Solve_itActionPerformed
         Node start = null;
@@ -635,7 +629,7 @@ public class GUI extends javax.swing.JFrame {
         int r = 0, c = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (start_point[i][j] == 0) {
+                if (startPoint[i][j] == 0) {
                     r = i;
                     c = j;
                 }
@@ -644,7 +638,7 @@ public class GUI extends javax.swing.JFrame {
 
         if (A_star.isSelected()) {
 
-            start = new Node(start_point, end_point, r, c, 0);
+            start = new Node(startPoint, endPoint, r, c, 0);
             int h = -1;
             if (heuristic1.isSelected()) {
                 h = 1;
@@ -657,7 +651,7 @@ public class GUI extends javax.swing.JFrame {
             end = Node.solutionAstar(start, h);
         } else if (greedy.isSelected()) {
 
-            start = new Node(start_point, end_point, r, c, 0);
+            start = new Node(startPoint, endPoint, r, c, 0);
             int h = -1;
             if (heuristic1.isSelected()) {
                 System.out.println("heuristic1 : manhatnis : Gready");
@@ -673,19 +667,19 @@ public class GUI extends javax.swing.JFrame {
         try {
             printPath(end);
             printPathGUI(end);
-        } catch (InterruptedException ex) {
+        } catch (Exception ex) {
         }
 
         Move print = new Move();
-        Gui = new Thread(print);
-        Gui.start();
+        gui = new Thread(print);
+        gui.start();
 
     }//GEN-LAST:event_Solve_itActionPerformed
 
     private void Start_and_end_pointsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Start_and_end_pointsMouseClicked
 
         try {
-            Gui.stop();
+            gui.stop();
         } catch (Exception e) {
         }
         Solve_it.setVisible(false);
@@ -698,36 +692,31 @@ public class GUI extends javax.swing.JFrame {
         Next.setVisible(false);
         Solve_it.setEnabled(true);
         jSlider2.setValue(1000);
-
         E = false;
         S = false;
-
-
     }//GEN-LAST:event_Start_and_end_pointsMouseClicked
 
     private void save_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_startActionPerformed
-        // TODO add your handling code here:
 
         try {
+            startPoint[0][0] = Integer.parseInt(t1.getText());
+            startPoint[0][1] = Integer.parseInt(t2.getText());
+            startPoint[0][2] = Integer.parseInt(t3.getText());
+            startPoint[1][0] = Integer.parseInt(t4.getText());
+            startPoint[1][1] = Integer.parseInt(t5.getText());
+            startPoint[1][2] = Integer.parseInt(t6.getText());
+            startPoint[2][0] = Integer.parseInt(t7.getText());
+            startPoint[2][1] = Integer.parseInt(t8.getText());
+            startPoint[2][2] = Integer.parseInt(t9.getText());
 
-            start_point[0][0] = Integer.parseInt(t1.getText());
-            start_point[0][1] = Integer.parseInt(t2.getText());
-            start_point[0][2] = Integer.parseInt(t3.getText());
-            start_point[1][0] = Integer.parseInt(t4.getText());
-            start_point[1][1] = Integer.parseInt(t5.getText());
-            start_point[1][2] = Integer.parseInt(t6.getText());
-            start_point[2][0] = Integer.parseInt(t7.getText());
-            start_point[2][1] = Integer.parseInt(t8.getText());
-            start_point[2][2] = Integer.parseInt(t9.getText());
-
-            if (isSolvable(start_point) && Default.isSelected()) {
+            if (isSolvable(startPoint) && Default.isSelected()) {
 
                 System.out.println("Start point :-");
 
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
 
-                        System.out.print(start_point[i][j] + " ");
+                        System.out.print(startPoint[i][j] + " ");
                     }
                     System.out.println("");
                 }
@@ -737,36 +726,35 @@ public class GUI extends javax.swing.JFrame {
                     Next.setVisible(true);
                 }
 
-                putStart(start_point);
-            }
-            else if (!Default.isSelected()) {
+                putStart(startPoint);
+            } else if (!Default.isSelected()) {
 
                 System.out.println("Start point :-");
 
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
 
-                        System.out.print(start_point[i][j] + " ");
+                        System.out.print(startPoint[i][j] + " ");
                     }
                     System.out.println("");
                 }
                 System.out.println("*****************************************");
 
-                putStart(start_point);
+                putStart(startPoint);
                 JOptionPane.showMessageDialog(null, "Start point is selected Successfully", "Done!", JOptionPane.INFORMATION_MESSAGE);
                 clear();
                 S = true;
                 if (S && E) {
-                 if (isSolvable(start_point,end_point)) Next.setVisible(true);
-                 else {
-                E =false;
-                S =false;
-                JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
-                clear();
-                return;
-                 }
+                    if (isSolvable(startPoint, endPoint)) {
+                        Next.setVisible(true);
+                    } else {
+                        E = false;
+                        S = false;
+                        JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
+                        clear();
+                        return;
+                    }
                 }
-                
 
             } else {
                 JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
@@ -783,145 +771,59 @@ public class GUI extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_save_startActionPerformed
-    void putStart(int[][] start_point) {
-        if (start_point[0][0] == 0) {
-            lego1.setBackground(new Color(0, 11, 66));
-            lego1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T1.setText("0");
-            T1.setForeground(new Color(0, 11, 66));
-
+    private void setLegoProperties(JPanel legoPanel, JLabel label, int value) {
+        if (value == 0) {
+            legoPanel.setBackground(new Color(0, 11, 66));
+            legoPanel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
+            label.setText("0");
+            label.setForeground(new Color(0, 11, 66));
         } else {
-            lego1.setBackground(new Color(255, 255, 205));
-            lego1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T1.setText(String.valueOf(start_point[0][0]));
-            T1.setForeground(new Color(222, 37, 38));
+            legoPanel.setBackground(new Color(255, 255, 205));
+            legoPanel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
+            label.setText(String.valueOf(value));
+            label.setForeground(new Color(222, 37, 38));
         }
-
-        if (start_point[0][1] == 0) {
-            lego2.setBackground(new Color(0, 11, 66));
-            lego2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T2.setText("0");
-            T2.setForeground(new Color(0, 11, 66));
-        } else {
-            lego2.setBackground(new Color(255, 255, 205));
-            lego2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T2.setText(String.valueOf(start_point[0][1]));
-            T2.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[0][2] == 0) {
-            lego3.setBackground(new Color(0, 11, 66));
-            lego3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T3.setText("0");
-            T3.setForeground(new Color(0, 11, 66));
-        } else {
-            lego3.setBackground(new Color(255, 255, 205));
-            lego3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T3.setText(String.valueOf(start_point[0][2]));
-            T3.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[1][0] == 0) {
-            lego4.setBackground(new Color(0, 11, 66));
-            lego4.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T4.setText("0");
-            T4.setForeground(new Color(0, 11, 66));
-        } else {
-            lego4.setBackground(new Color(255, 255, 205));
-            lego4.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T4.setText(String.valueOf(start_point[1][0]));
-            T4.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[1][1] == 0) {
-            lego5.setBackground(new Color(0, 11, 66));
-            lego5.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T5.setText("0");
-            T5.setForeground(new Color(0, 11, 66));
-        } else {
-            lego5.setBackground(new Color(255, 255, 205));
-            lego5.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T5.setText(String.valueOf(start_point[1][1]));
-            T5.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[1][2] == 0) {
-            lego6.setBackground(new Color(0, 11, 66));
-            lego6.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T6.setText("0");
-            T6.setForeground(new Color(0, 11, 66));
-        } else {
-
-            lego6.setBackground(new Color(255, 255, 205));
-            lego6.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T6.setText(String.valueOf(start_point[1][2]));
-            T6.setForeground(new Color(222, 37, 38));
-
-        }
-        if (start_point[2][0] == 0) {
-            lego7.setBackground(new Color(0, 11, 66));
-            lego7.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T7.setText("0");
-            T7.setForeground(new Color(0, 11, 66));
-        } else {
-            lego7.setBackground(new Color(255, 255, 205));
-            lego7.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T7.setText(String.valueOf(start_point[2][0]));
-            T7.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[2][1] == 0) {
-            lego8.setBackground(new Color(0, 11, 66));
-            lego8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T8.setText("0");
-            T8.setForeground(new Color(0, 11, 66));
-        } else {
-            lego8.setBackground(new Color(255, 255, 205));
-            lego8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T8.setText(String.valueOf(start_point[2][1]));
-            T8.setForeground(new Color(222, 37, 38));
-        }
-        if (start_point[2][2] == 0) {
-            lego9.setBackground(new Color(0, 11, 66));
-            lego9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            T9.setText("0");
-            T9.setForeground(new Color(0, 11, 66));
-        } else {
-            lego9.setBackground(new Color(255, 255, 205));
-            lego9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            T9.setText(String.valueOf(start_point[2][2]));
-            T9.setForeground(new Color(222, 37, 38));
-        }
-
     }
 
-    void printPath(Node n) throws InterruptedException {
-        int count = 1;
+    void putStart(int[][] start_point) {
+        setLegoProperties(lego1, T1, start_point[0][0]);
+        setLegoProperties(lego2, T2, start_point[0][1]);
+        setLegoProperties(lego3, T3, start_point[0][2]);
+        setLegoProperties(lego4, T4, start_point[1][0]);
+        setLegoProperties(lego5, T5, start_point[1][1]);
+        setLegoProperties(lego6, T6, start_point[1][2]);
+        setLegoProperties(lego7, T7, start_point[2][0]);
+        setLegoProperties(lego8, T8, start_point[2][1]);
+        setLegoProperties(lego9, T9, start_point[2][2]);
+    }
+
+    void printPath(Node n) {
+        int Count = 1;
         Node m = n;
-        Stack<int[][]> stac = new Stack<int[][]>();
+        Stack<int[][]> stack = new Stack<int[][]>();
         while (m.parent != null) {
-            stac.push(m.st);
+            stack.push(m.st);
             m = m.parent;
         }
-        while (!stac.empty()) {
-            int[][] ma = stac.pop();
-            System.out.println("Move " + count);
+        while (!stack.empty()) {
+            int[][] ma = stack.pop();
+            System.out.println("Move " + Count);
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     System.out.print(ma[i][j]);
                 }
                 System.out.print("\n");
-
             }
-
-            count++;
-
+            Count++;
         }
-
         System.out.println("*****************************************");
-
     }
 
     void printPathGUI(Node n) {
         Node m = n;
-        stac = new Stack<int[][]>();
+        stack = new Stack<int[][]>();
         while (m.parent != null) {
-            stac.push(m.st);
+            stack.push(m.st);
             m = m.parent;
         }
     }
@@ -932,354 +834,109 @@ public class GUI extends javax.swing.JFrame {
 
         Cover1.setVisible(true);
         Cover2.setVisible(false);
-            Cover.setVisible(false);    }//GEN-LAST:event_NextMouseClicked
+        Cover.setVisible(false); 
+		}//GEN-LAST:event_NextMouseClicked
 
-    private void lego1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego1MouseClicked
-        changeCheckCountTofalse(t1.getText());
-
+    private void legoMouseClicked(java.awt.event.MouseEvent evt, JLabel label, JPanel legPanel) {
+        changeCheckCountTofalse(label.getText());
         count++;
-        if (count >= 9) {
+        if (count >= 9) 
             count = 0;
-        }
 
-        while (checkCount[count] == true) {
+        while (checkCount[count]) {
             count++;
-            if (count > 8) {
+            if (count > 8) 
                 count = 0;
-            }
         }
 
         if (count > 0) {
-            leg1.setBackground(new Color(255, 255, 205));
-            leg1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t1.setText(String.valueOf(count));
-            t1.setForeground(new Color(222, 37, 38));
+            legPanel.setBackground(new Color(255, 255, 205));
+            legPanel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
+            label.setText(String.valueOf(count));
+            label.setForeground(new Color(222, 37, 38));
         } else if (count == 0) {
-            leg1.setBackground(new Color(0, 11, 66));
-            leg1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t1.setText("0");
-            t1.setForeground(new Color(0, 11, 66));
-
+            legPanel.setBackground(new Color(0, 11, 66));
+            legPanel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
+            label.setText("0");
+            label.setForeground(new Color(0, 11, 66));
         }
+    }
+
+
+    private void lego1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego1MouseClicked
+        legoMouseClicked(evt, t1, leg1);
     }//GEN-LAST:event_lego1MouseClicked
 
     private void lego2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego2MouseClicked
-        changeCheckCountTofalse(t2.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg2.setBackground(new Color(255, 255, 205));
-            leg2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t2.setText(String.valueOf(count));
-            t2.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg2.setBackground(new Color(0, 11, 66));
-            leg2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t2.setText("0");
-            t2.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t2, leg2);
     }//GEN-LAST:event_lego2MouseClicked
 
     private void lego3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego3MouseClicked
-        changeCheckCountTofalse(t3.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg3.setBackground(new Color(255, 255, 205));
-            leg3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t3.setText(String.valueOf(count));
-            t3.setForeground(new Color(222, 37, 38));
-
-        } else if (count == 0) {
-            leg3.setBackground(new Color(0, 11, 66));
-            leg3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t3.setText("0");
-            t3.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t3, leg3);
     }//GEN-LAST:event_lego3MouseClicked
 
     private void lego4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego4MouseClicked
-
-        changeCheckCountTofalse(t4.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg4.setBackground(new Color(255, 255, 205));
-            leg4.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t4.setText(String.valueOf(count));
-            t4.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg4.setBackground(new Color(0, 11, 66));
-            leg4.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t4.setText("0");
-            t4.setForeground(new Color(0, 11, 66));
-        }
-
+        legoMouseClicked(evt, t4, leg4);
     }//GEN-LAST:event_lego4MouseClicked
 
     private void lego5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego5MouseClicked
-        changeCheckCountTofalse(t5.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg5.setBackground(new Color(255, 255, 205));
-            leg5.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t5.setText(String.valueOf(count));
-            t5.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg5.setBackground(new Color(0, 11, 66));
-            leg5.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t5.setText("0");
-            t5.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t5, leg5);
     }//GEN-LAST:event_lego5MouseClicked
 
     private void lego6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego6MouseClicked
-        changeCheckCountTofalse(t6.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg6.setBackground(new Color(255, 255, 205));
-            leg6.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t6.setText(String.valueOf(count));
-            t6.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg6.setBackground(new Color(0, 11, 66));
-            leg6.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t6.setText("0");
-            t6.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t6, leg6);
     }//GEN-LAST:event_lego6MouseClicked
 
     private void lego7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego7MouseClicked
-        changeCheckCountTofalse(t7.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg7.setBackground(new Color(255, 255, 205));
-            leg7.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t7.setText(String.valueOf(count));
-            t7.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg7.setBackground(new Color(0, 11, 66));
-            leg7.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t7.setText("0");
-            t7.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t7, leg7);
     }//GEN-LAST:event_lego7MouseClicked
 
     private void lego8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego8MouseClicked
-        changeCheckCountTofalse(t8.getText());
-        count++;//9
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg8.setBackground(new Color(255, 255, 205));
-            leg8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t8.setText(String.valueOf(count));
-            t8.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg8.setBackground(new Color(0, 11, 66));
-            leg8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t8.setText("0");
-            t8.setForeground(new Color(0, 11, 66));
-
-        }
-
-
+        legoMouseClicked(evt, t8, leg8);
     }//GEN-LAST:event_lego8MouseClicked
 
     private void lego9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lego9MouseClicked
-        changeCheckCountTofalse(t9.getText());
-        count++;
-        if (count >= 9) {
-            count = 0;
-        }
-
-        while (checkCount[count] == true) {
-            count++;
-            if (count > 8) {
-                count = 0;
-            }
-        }
-
-        if (count > 0) {
-            leg9.setBackground(new Color(255, 255, 205));
-            leg9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-            t9.setText(String.valueOf(count));
-            t9.setForeground(new Color(222, 37, 38));
-        } else if (count == 0) {
-            leg9.setBackground(new Color(0, 11, 66));
-            leg9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 11, 66)));
-            t9.setText("0");
-            t9.setForeground(new Color(0, 11, 66));
-
-        }
-
+        legoMouseClicked(evt, t9, leg9);
     }//GEN-LAST:event_lego9MouseClicked
 
     private void clear_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_startActionPerformed
-
         clear();
-
     }//GEN-LAST:event_clear_startActionPerformed
     void clear() {
         count = -1;
-        for (int i = 0; i < checkCount.length; i++) {
+        for (int i = 0; i < checkCount.length; i++) 
             checkCount[i] = false;
+
+        JPanel[] legPanels = {leg1, leg2, leg3, leg4, leg5, leg6, leg7, leg8, leg9};
+        JLabel[] label = {t1, t2, t3, t4, t5, t6, t7, t8, t9};
+
+        for (int i = 0; i < legPanels.length; i++) {
+            legPanels[i].setBackground(new Color(255, 255, 205));
+            legPanels[i].setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
+            label[i].setText("");
+            label[i].setForeground(new Color(222, 37, 38));
         }
 
-        leg1.setBackground(new Color(255, 255, 205));
-        leg1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t1.setText("");
-        t1.setForeground(new Color(222, 37, 38));
-
-        leg2.setBackground(new Color(255, 255, 205));
-        leg2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t2.setText("");
-        t2.setForeground(new Color(222, 37, 38));
-
-        leg3.setBackground(new Color(255, 255, 205));
-        leg3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t3.setText("");
-        t3.setForeground(new Color(222, 37, 38));
-
-        leg3.setBackground(new Color(255, 255, 205));
-        leg3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t3.setText("");
-        t3.setForeground(new Color(222, 37, 38));
-
-        leg4.setBackground(new Color(255, 255, 205));
-        leg4.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t4.setText("");
-        t4.setForeground(new Color(222, 37, 38));
-
-        leg5.setBackground(new Color(255, 255, 205));
-        leg5.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t5.setText("");
-        t5.setForeground(new Color(222, 37, 38));
-
-        leg6.setBackground(new Color(255, 255, 205));
-        leg6.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t6.setText("");
-        t6.setForeground(new Color(222, 37, 38));
-
-        leg7.setBackground(new Color(255, 255, 205));
-        leg7.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t7.setText("");
-        t7.setForeground(new Color(222, 37, 38));
-
-        leg8.setBackground(new Color(255, 255, 205));
-        leg8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t8.setText("");
-        t8.setForeground(new Color(222, 37, 38));
-
-        leg9.setBackground(new Color(255, 255, 205));
-        leg9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(222, 37, 38)));
-        t9.setText("");
-        t9.setForeground(new Color(222, 37, 38));
-
         Next.setVisible(false);
-
     }
     private void save_endActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_endActionPerformed
-        // TODO add your handling code here:
         try {
-            end_point[0][0] = Integer.parseInt(t1.getText());
-            end_point[0][1] = Integer.parseInt(t2.getText());
-            end_point[0][2] = Integer.parseInt(t3.getText());
-            end_point[1][0] = Integer.parseInt(t4.getText());
-            end_point[1][1] = Integer.parseInt(t5.getText());
-            end_point[1][2] = Integer.parseInt(t6.getText());
-            end_point[2][0] = Integer.parseInt(t7.getText());
-            end_point[2][1] = Integer.parseInt(t8.getText());
-            end_point[2][2] = Integer.parseInt(t9.getText());
+            endPoint[0][0] = Integer.parseInt(t1.getText());
+            endPoint[0][1] = Integer.parseInt(t2.getText());
+            endPoint[0][2] = Integer.parseInt(t3.getText());
+            endPoint[1][0] = Integer.parseInt(t4.getText());
+            endPoint[1][1] = Integer.parseInt(t5.getText());
+            endPoint[1][2] = Integer.parseInt(t6.getText());
+            endPoint[2][0] = Integer.parseInt(t7.getText());
+            endPoint[2][1] = Integer.parseInt(t8.getText());
+            endPoint[2][2] = Integer.parseInt(t9.getText());
 
             System.out.println("End point :-");
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
 
-                    System.out.print(end_point[i][j] + " ");
+                    System.out.print(endPoint[i][j] + " ");
                 }
                 System.out.println("");
             }
@@ -1290,166 +947,68 @@ public class GUI extends javax.swing.JFrame {
             E = true;
 
             if (S && E) {
-                 if (isSolvable(start_point,end_point)) Next.setVisible(true);
-                 else {
-                E =false;
-                S =false;
-                JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
-                clear();
-                return;
-                 }
+                if (isSolvable(startPoint, endPoint)) {
+                    Next.setVisible(true);
+                } else {
+                    E = false;
+                    S = false;
+                    JOptionPane.showMessageDialog(null, "Imposible to Solve it", "Erorr!", JOptionPane.ERROR_MESSAGE);
+                    clear();
+                }
             }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Invalid input ", "Erorr!", JOptionPane.ERROR_MESSAGE);
             clear();
-
         }
     }//GEN-LAST:event_save_endActionPerformed
 
-    private void leg1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg1MouseExited
-        // TODO add your handling code here:
+    private void legMouseExited(java.awt.event.MouseEvent evt, JLabel label) {
         int index = -1;
-        if (t1.getText().trim().equals("")) {
+        if (label.getText().trim().equals("")) 
             return;
-        }
-        if (t1.getText().trim().equals("0")) {
+   
+        if (label.getText().trim().equals("0"))
             index = 0;
-
-        } else {
-            index = Integer.parseInt(t1.getText().trim());
-        }
-
+         else 
+            index = Integer.parseInt(label.getText().trim());
         checkCount[index] = true;
+    }
 
+    private void leg1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg1MouseExited
+        legMouseExited(evt, t1);
     }//GEN-LAST:event_leg1MouseExited
 
     private void leg2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg2MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t2.getText().trim().equals("")) {
-            return;
-        }
-        if (t2.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t2.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t2);
     }//GEN-LAST:event_leg2MouseExited
 
     private void leg3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg3MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t3.getText().trim().equals("")) {
-            return;
-        }
-        if (t3.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t3.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t3);
     }//GEN-LAST:event_leg3MouseExited
 
     private void leg4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg4MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t4.getText().trim().equals("")) {
-            return;
-        }
-        if (t4.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t4.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t4);
     }//GEN-LAST:event_leg4MouseExited
 
     private void leg5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg5MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t5.getText().trim().equals("")) {
-            return;
-        }
-        if (t5.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t5.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t5);
     }//GEN-LAST:event_leg5MouseExited
 
     private void leg6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg6MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t6.getText().trim().equals("")) {
-            return;
-        }
-        if (t6.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t6.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t6);
     }//GEN-LAST:event_leg6MouseExited
 
     private void leg7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg7MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t7.getText().trim().equals("")) {
-            return;
-        }
-        if (t7.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t7.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t7);
     }//GEN-LAST:event_leg7MouseExited
 
     private void leg8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg8MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t8.getText().trim().equals("")) {
-            return;
-        }
-        if (t8.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t8.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t8);
     }//GEN-LAST:event_leg8MouseExited
 
     private void leg9MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leg9MouseExited
-        // TODO add your handling code here:
-        int index = -1;
-        if (t9.getText().trim().equals("")) {
-            return;
-        }
-        if (t9.getText().trim().equals("0")) {
-            index = 0;
-
-        } else {
-            index = Integer.parseInt(t9.getText().trim());
-        }
-        checkCount[index] = true;
-
+        legMouseExited(evt, t9);
     }//GEN-LAST:event_leg9MouseExited
 
     private void DefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DefaultActionPerformed
@@ -1459,8 +1018,17 @@ public class GUI extends javax.swing.JFrame {
 
     private void BackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BackMouseClicked
         Cover.setVisible(true);
-        Cover2.setVisible(false);
         Cover1.setVisible(false);
+        Cover2.setVisible(false);
+        endPoint[0][0] = 1;
+        endPoint[0][1] = 2;
+        endPoint[0][2] = 3;
+        endPoint[1][0] = 4;
+        endPoint[1][1] = 5;
+        endPoint[1][2] = 6;
+        endPoint[2][0] = 7;
+        endPoint[2][1] = 8;
+        endPoint[2][2] = 0;
         clear();
     }//GEN-LAST:event_BackMouseClicked
 
@@ -1472,29 +1040,25 @@ public class GUI extends javax.swing.JFrame {
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
 
         try {
-            Gui.stop();
-        } catch (Exception e) {
-        }
+            gui.stop();
+        } catch (Exception e) {}
         Solve_it.setVisible(true);
         Solve_it.setEnabled(true);
         jSlider2.setValue(1000);
-
         Algorithm1.setVisible(false);
         jPanel1.setVisible(false);
-
-      putStart(start_point);    }//GEN-LAST:event_jLabel1MouseClicked
+        putStart(startPoint); 
+       }//GEN-LAST:event_jLabel1MouseClicked
 
     void changeCheckCountTofalse(String ss) {
         int index = -1;
-        if (ss.trim().equals("")) {
+        if (ss.trim().equals("")) 
             return;
-        }
-        if (ss.trim().equals("0")) {
+        if (ss.trim().equals("0")) 
             index = 0;
-
-        } else {
+         else 
             index = Integer.parseInt(ss);
-        }
+        
         checkCount[index] = false;
 
     }
@@ -1508,31 +1072,21 @@ public class GUI extends javax.swing.JFrame {
             jPanel1.setVisible(true);
             try {
                 Thread.sleep(1000);
-            } catch (Exception ex) {
-            }
-
-            while (!stac.empty()) {
-
+            } catch (Exception ex) {}
+            while (!stack.empty()) {
                 try {
-
                     Thread.sleep(2200 - jSlider2.getValue());
-                    int[][] ma = stac.pop();
+                    int[][] ma = stack.pop();
                     putStart(ma);
 
-                } catch (Exception ex) {
-                }
-
+                } catch (Exception ex) {}
             }
-
             Solve_it.setVisible(true);
             Solve_it.setEnabled(false);
             Algorithm1.setVisible(false);
             jPanel1.setVisible(false);
-
         }
-
     }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton A_star;

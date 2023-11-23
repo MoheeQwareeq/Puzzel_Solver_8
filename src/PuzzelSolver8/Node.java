@@ -3,7 +3,6 @@ package PuzzelSolver8;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.PriorityQueue;
-import java.util.Stack;
 
 public class Node extends PriorityQueue<Node> implements Comparable<Node> {
 
@@ -42,14 +41,10 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
             for (int j = 0; j < 3; j++) {
                 if (m[i][j] != m1[i][j]) {
                     return false;
-
                 }
-
             }
-
         }
         return true;
-
     }
 
     void genChildren() {
@@ -60,8 +55,8 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
             tmp[posI][posJ] = tmp[posI][posJ + 1];
             tmp[posI][posJ + 1] = swap;
             children.add(new Node(tmp, end_point, posI, posJ + 1, cost + 1));
-
         }
+        
         if (this.posJ == 2 || this.posJ == 1) {
             //genrate left 
             int[][] tmp = copyArr(st);
@@ -69,8 +64,8 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
             tmp[posI][posJ] = tmp[posI][posJ - 1];
             tmp[posI][posJ - 1] = swap;
             children.add(new Node(tmp, end_point, posI, posJ - 1, cost + 1));
-
         }
+        
         if (this.posI == 0 || this.posI == 1) {
             //genrate DOWN 
             int[][] tmp = copyArr(st);
@@ -78,8 +73,8 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
             tmp[posI][posJ] = tmp[posI + 1][posJ];
             tmp[posI + 1][posJ] = swap;
             children.add(new Node(tmp, end_point, posI + 1, posJ, cost + 1));
-
         }
+        
         if (this.posI == 1 || this.posI == 2) {
             //genrate UP
             int[][] tmp = copyArr(st);
@@ -87,7 +82,6 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
             tmp[posI][posJ] = tmp[posI - 1][posJ];
             tmp[posI - 1][posJ] = swap;
             children.add(new Node(tmp, end_point, posI - 1, posJ, cost + 1));
-
         }
 
     }
@@ -96,9 +90,8 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
         int sum = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (st[i][j] != end_point[i][j]) {
+                if (st[i][j] != end_point[i][j])
                     sum++;
-                }
             }
         }
         return sum;
@@ -120,9 +113,7 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
                             break;
                         }
                     }
-                    if (f) {
-                        break;
-                    }
+                    if (f) break;
                 }
             }
 
@@ -135,10 +126,8 @@ public class Node extends PriorityQueue<Node> implements Comparable<Node> {
         boolean check = false;
         while (it.hasNext()) {
             Node tmp = (Node) it.next();
-            if (checkIfmatrixEquel(tmp.st, n.st)) {
+            if (checkIfmatrixEquel(tmp.st, n.st))
                 return tmp;
-            }
-
         }
         return null;
 
